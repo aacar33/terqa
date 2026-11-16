@@ -1,0 +1,30 @@
+import json
+
+import serial
+
+
+def send_command(command, port="COM3", baudrate=115200, timeout=2):
+    """
+    Open a serial connection using the supplied settings.
+    Send the command followed by \n.
+    Read one response line using readline().
+    Decode the response from bytes into a string.
+    Parse the JSON using json.loads().
+    Return the resulting dictionary.
+    Close the connection using a with statement.
+    """
+    with serial.Serial(port, baudrate, timeout=timeout) as device:
+        device.write((command + "\n").encode("utf-8"))
+
+        response = device.readline()
+        message = response.decode("utf-8").strip()
+
+        if message == "":
+            raise TimeoutError("No response from device")
+
+        result = json.loads(message)
+
+        if result["command"] == command:
+            return result
+        else:
+            raise ValueError("Unexpected response command")
