@@ -204,10 +204,10 @@ TERQA uses Python virtual environments to isolate local development and testing 
 
 Development dependencies are maintained in `requirements-dev.txt`.
 
-| Dependency | Version Constraint |
+| Dependency | Version |
 | --- | --- |
-| pytest | >=9,<10 |
-| pyserial | >=3.5,<4 |
+| pytest | 9.2.0 |
+| pyserial | 3.5 |
 
 Virtual environments are excluded from version control and must be created locally.
 
@@ -270,7 +270,7 @@ The continuous integration workflow executes framework unit tests on pushes and 
 | --- | --- |
 | CI Platform | GitHub Actions |
 | Operating System | Ubuntu |
-| Python Version | 3.12 |
+| Python Version | 3.14 |
 | Test Framework | pytest |
 | Hardware Required | No |
 
