@@ -316,8 +316,8 @@ Additional technical documentation will be introduced as the framework evolves.
 - [x] GitHub Actions integration
 - [x] Branch protection configuration
 - [x] Development dependency definition
-- [ ] Shared dependency installation between local development and CI
-- [ ] Local virtual environment validation
+- [x] Shared dependency installation between local development and CI
+- [x] Local virtual environment validation
 - [ ] Enhanced response validation
 - [ ] Configuration management
 - [ ] Centralised logging and diagnostics
