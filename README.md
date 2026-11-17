@@ -67,9 +67,9 @@ TERQA is designed to be a cross-platform test automation framework, minimising o
 
 | Platform | Compatibility Status |
 | --- | --- |
-| Windows 11 | Primary development platform |
+| Windows 11 | Framework unit tests validated locally |
 | Linux (Ubuntu) | Framework unit tests validated through CI |
-| Windows Subsystem for Linux (WSL2) | Local validation planned |
+| Windows Subsystem for Linux (WSL2) | Framework unit tests validated locally |
 | macOS | Planned compatibility |
 
 Framework unit tests are designed to run independently of physical hardware and external test environments.
@@ -327,7 +327,7 @@ Additional technical documentation will be introduced as the framework evolves.
 ### Cross-Platform Compatibility
 
 - [x] Linux framework unit testing through CI
-- [ ] WSL2 validation
+- [x] WSL2 validation
 - [ ] Windows CI validation
 - [ ] macOS CI validation
 - [ ] Cross-platform CI merge requirements
