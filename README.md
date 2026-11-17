@@ -67,10 +67,10 @@ TERQA is designed to be a cross-platform test automation framework, minimising o
 
 | Platform | Compatibility Status |
 | --- | --- |
-| Windows 11 | Framework unit tests validated locally |
+| Windows 11 | Framework unit tests validated locally and through CI |
 | Linux (Ubuntu) | Framework unit tests validated through CI |
 | Windows Subsystem for Linux (WSL2) | Framework unit tests validated locally |
-| macOS | Planned compatibility |
+| macOS | Framework unit tests validated through CI |
 
 Framework unit tests are designed to run independently of physical hardware and external test environments.
 
@@ -114,7 +114,7 @@ terqa/
 
 ### Prerequisites
 
-- Python 3.12 (current CI baseline)
+- Python 3.14 (current CI baseline)
 - Git
 - Python venv module
 
@@ -190,7 +190,9 @@ Ensure that the Python interpreter used to create the virtual environment matche
 
 For WSL2 development, a separate repository clone within the Linux filesystem is recommended.
 
-macOS installation instructions are provided for future compatibility and have not yet been validated.
+Framework unit tests are validated on macOS through GitHub Actions.
+
+Local macOS installation and physical device communication have not yet been validated.
 
 ### Deactivate the Virtual Environment
 
@@ -269,18 +271,25 @@ The continuous integration workflow executes framework unit tests on pushes and 
 | Configuration | Value |
 | --- | --- |
 | CI Platform | GitHub Actions |
-| Operating System | Ubuntu |
+| Operating Systems | Windows, Linux and macOS |
 | Python Version | 3.14 |
 | Test Framework | pytest |
+| Execution Strategy | Parallel matrix execution |
 | Hardware Required | No |
 
 ### Merge Protection
 
 The `main` branch is protected through GitHub repository rules.
 
-Changes must be submitted through pull requests and satisfy the required automated test checks before merging.
+All changes must be submitted through pull requests and satisfy the required automated test checks before merging.
 
-A failed required test check must prevent the pull request from being merged.
+Framework unit tests are executed independently across Windows, Linux and macOS.
+
+The aggregate `unit-tests` status check requires successful completion across all three platforms.
+
+A failure on any platform must prevent the pull request from being merged.
+
+Product-specific tests are excluded from the required CI checks.
 
 ## Development Workflow
 
@@ -328,9 +337,9 @@ Additional technical documentation will be introduced as the framework evolves.
 
 - [x] Linux framework unit testing through CI
 - [x] WSL2 validation
-- [ ] Windows CI validation
-- [ ] macOS CI validation
-- [ ] Cross-platform CI merge requirements
+- [x] Windows CI validation
+- [x] macOS CI validation
+- [x] Cross-platform CI merge requirements
 
 ### Product Testing Capabilities
 
