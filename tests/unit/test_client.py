@@ -4,6 +4,7 @@ import pytest
 import serial
 
 from tab5.client import send_command
+from tab5.exceptions import SerialCommunicationError
 
 
 def test_ping_command(mock_client_serial):
@@ -222,7 +223,7 @@ def test_serial_connection_failure(mock_client_serial):
 
     mock_serial.side_effect = serial.SerialException("Serial connection failed")
 
-    with pytest.raises(ConnectionError, match="^Serial communication failed$") as exc_info:
+    with pytest.raises(SerialCommunicationError, match="^Serial communication failed$") as exc_info:
         send_command("PING")
 
     assert str(exc_info.value.__cause__) == "Serial connection failed"
@@ -241,7 +242,7 @@ def test_serial_write_failure(mock_client_serial):
 
     fake_device.write.side_effect = serial.SerialException("Serial write failed")
 
-    with pytest.raises(ConnectionError, match="^Serial communication failed$") as exc_info:
+    with pytest.raises(SerialCommunicationError, match="^Serial communication failed$") as exc_info:
         send_command("PING")
 
     assert str(exc_info.value.__cause__) == "Serial write failed"
@@ -260,7 +261,7 @@ def test_serial_read_failure(mock_client_serial):
 
     fake_device.readline.side_effect = serial.SerialException("Serial read failed")
 
-    with pytest.raises(ConnectionError, match="^Serial communication failed$") as exc_info:
+    with pytest.raises(SerialCommunicationError, match="^Serial communication failed$") as exc_info:
         send_command("PING")
 
     assert str(exc_info.value.__cause__) == "Serial read failed"
@@ -272,3 +273,11 @@ def test_serial_read_failure(mock_client_serial):
     fake_device.readline.assert_called_once()
 
     mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
+
+
+def test_serial_communication_error_inheritance():
+    assert issubclass(SerialCommunicationError, ConnectionError)
+
+    error = SerialCommunicationError("Serial communication error")
+    assert isinstance(error, ConnectionError)
+    assert str(error) == "Serial communication error"

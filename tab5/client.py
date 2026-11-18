@@ -2,6 +2,8 @@ import json
 
 import serial
 
+from tab5.exceptions import SerialCommunicationError
+
 
 def send_command(command, port="COM3", baudrate=115200, timeout=2):
     """
@@ -35,6 +37,6 @@ def send_command(command, port="COM3", baudrate=115200, timeout=2):
             raise ValueError("Unexpected response command")
 
     except serial.SerialException as exc:
-        raise ConnectionError("Serial communication failed") from exc
+        raise SerialCommunicationError("Serial communication failed") from exc
 
     return result
