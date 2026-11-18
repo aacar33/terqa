@@ -13,11 +13,12 @@ def send_command(command, port="COM3", baudrate=115200, timeout=2):
     Return the resulting dictionary.
     Close the connection using a with statement.
     """
-    with serial.Serial(port, baudrate, timeout=timeout) as device:
-        device.write((command + "\n").encode("utf-8"))
+    try:
+        with serial.Serial(port, baudrate, timeout=timeout) as device:
+            device.write((command + "\n").encode("utf-8"))
 
-        response = device.readline()
-        message = response.decode("utf-8").strip()
+            response = device.readline()
+            message = response.decode("utf-8").strip()
 
         if message == "":
             raise TimeoutError("No response from device")
@@ -32,5 +33,8 @@ def send_command(command, port="COM3", baudrate=115200, timeout=2):
 
         if result["command"] != command:
             raise ValueError("Unexpected response command")
+
+    except serial.SerialException as exc:
+        raise ConnectionError("Serial communication failed") from exc
 
     return result

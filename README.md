@@ -48,6 +48,8 @@ TERQA is currently under active development.
 - Mock-based unit testing.
 - Automated framework unit test execution through GitHub Actions.
 - Parametrised unit testing.
+- Serial communication exception handling.
+- Exception chaining for failure diagnostics.
 
 ### Supported Hardware
 
@@ -238,6 +240,7 @@ Framework validation focuses on:
 - Boundary conditions.
 - Cross-platform compatibility.
 - Framework component integration.
+- Simulated communication failures.
 
 Framework validation tests form the basis of TERQA's continuous integration and merge protection strategy.
 

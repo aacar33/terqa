@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import serial
 
 from tab5.client import send_command
 
@@ -212,5 +213,62 @@ def test_invalid_response_structure(mock_client_serial, response_data):
     fake_device.write.assert_called_once_with(b"PING\n")
 
     assert fake_device.readline.call_count == 1
+
+    mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
+
+
+def test_serial_connection_failure(mock_client_serial):
+    mock_serial, fake_device = mock_client_serial
+
+    mock_serial.side_effect = serial.SerialException("Serial connection failed")
+
+    with pytest.raises(ConnectionError, match="^Serial communication failed$") as exc_info:
+        send_command("PING")
+
+    assert str(exc_info.value.__cause__) == "Serial connection failed"
+
+    assert isinstance(exc_info.value.__cause__, serial.SerialException)
+
+    fake_device.readline.assert_not_called()
+
+    fake_device.write.assert_not_called()
+
+    mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
+
+
+def test_serial_write_failure(mock_client_serial):
+    mock_serial, fake_device = mock_client_serial
+
+    fake_device.write.side_effect = serial.SerialException("Serial write failed")
+
+    with pytest.raises(ConnectionError, match="^Serial communication failed$") as exc_info:
+        send_command("PING")
+
+    assert str(exc_info.value.__cause__) == "Serial write failed"
+
+    assert isinstance(exc_info.value.__cause__, serial.SerialException)
+
+    fake_device.write.assert_called_once_with(b"PING\n")
+
+    fake_device.readline.assert_not_called()
+
+    mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
+
+
+def test_serial_read_failure(mock_client_serial):
+    mock_serial, fake_device = mock_client_serial
+
+    fake_device.readline.side_effect = serial.SerialException("Serial read failed")
+
+    with pytest.raises(ConnectionError, match="^Serial communication failed$") as exc_info:
+        send_command("PING")
+
+    assert str(exc_info.value.__cause__) == "Serial read failed"
+
+    assert isinstance(exc_info.value.__cause__, serial.SerialException)
+
+    fake_device.write.assert_called_once_with(b"PING\n")
+
+    fake_device.readline.assert_called_once()
 
     mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
