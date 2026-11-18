@@ -50,6 +50,8 @@ TERQA is currently under active development.
 - Parametrised unit testing.
 - Serial communication exception handling.
 - Exception chaining for failure diagnostics.
+- Custom exception classes for serial communication failures.
+- Backwards-compatible exception inheritance.
 
 ### Supported Hardware
 
@@ -334,7 +336,7 @@ Additional technical documentation will be introduced as the framework evolves.
 - [x] Enhanced response validation
 - [ ] Configuration management
 - [ ] Centralised logging and diagnostics
-- [ ] Custom exception handling
+- [x] Custom exception handling
 - [ ] Reusable device interfaces
 
 ### Cross-Platform Compatibility
