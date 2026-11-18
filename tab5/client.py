@@ -24,7 +24,13 @@ def send_command(command, port="COM3", baudrate=115200, timeout=2):
 
         result = json.loads(message)
 
-        if result["command"] == command:
-            return result
-        else:
+        if not isinstance(result, dict):
+            raise ValueError("Response must be a JSON object")
+
+        if "command" not in result:
+            raise ValueError("Response does not contain a command key")
+
+        if result["command"] != command:
             raise ValueError("Unexpected response command")
+
+    return result
