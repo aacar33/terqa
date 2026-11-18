@@ -172,3 +172,45 @@ def test_mismatched_response_command(mock_client_serial):
     mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
 
 
+def test_missing_response_command(mock_client_serial):
+    mock_serial, fake_device = mock_client_serial
+
+    response_data = b'{"status":"ok"}\n'
+
+    fake_device.readline.return_value = response_data
+
+    with pytest.raises(ValueError, match="Response does not contain a command key"):
+        send_command("GET_SENSOR")
+
+    fake_device.write.assert_called_once_with(b"GET_SENSOR\n")
+
+    assert fake_device.readline.call_count == 1
+
+    mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
+
+@pytest.mark.parametrize(
+    "response_data",
+    [
+        b'["PING", "ok"]\n',
+        b'"PING"\n',
+        b'42\n',
+        b'3.14\n',
+        b'true\n',
+        b'null\n',
+    ],
+    ids=["list", "string", "integer", "float", "boolean", "null"],
+)
+
+def test_invalid_response_structure(mock_client_serial, response_data):
+    mock_serial, fake_device = mock_client_serial
+
+    fake_device.readline.return_value = response_data
+
+    with pytest.raises(ValueError, match="Response must be a JSON object"):
+        send_command("PING")
+
+    fake_device.write.assert_called_once_with(b"PING\n")
+
+    assert fake_device.readline.call_count == 1
+
+    mock_serial.assert_called_once_with("COM3", 115200, timeout=2)

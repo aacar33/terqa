@@ -42,11 +42,12 @@ TERQA is currently under active development.
 - Serial communication with embedded devices.
 - Command-based device communication.
 - JSON response parsing.
-- Device response command validation.
+- Device response structure and command validation.
 - Serial communication timeout handling.
 - Sensor data parsing.
 - Mock-based unit testing.
 - Automated framework unit test execution through GitHub Actions.
+- Parametrised unit testing.
 
 ### Supported Hardware
 
@@ -327,7 +328,7 @@ Additional technical documentation will be introduced as the framework evolves.
 - [x] Development dependency definition
 - [x] Shared dependency installation between local development and CI
 - [x] Local virtual environment validation
-- [ ] Enhanced response validation
+- [x] Enhanced response validation
 - [ ] Configuration management
 - [ ] Centralised logging and diagnostics
 - [ ] Custom exception handling
