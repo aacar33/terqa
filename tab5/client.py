@@ -2,7 +2,7 @@ import json
 
 import serial
 
-from tab5.exceptions import SerialCommunicationError
+from tab5.exceptions import ProtocolError, ResponseTimeoutError, SerialCommunicationError
 
 
 def send_command(command, port="COM3", baudrate=115200, timeout=2):
@@ -23,18 +23,18 @@ def send_command(command, port="COM3", baudrate=115200, timeout=2):
             message = response.decode("utf-8").strip()
 
         if message == "":
-            raise TimeoutError("No response from device")
+            raise ResponseTimeoutError("No response from device")
 
         result = json.loads(message)
 
         if not isinstance(result, dict):
-            raise ValueError("Response must be a JSON object")
+            raise ProtocolError("Response must be a JSON object")
 
         if "command" not in result:
-            raise ValueError("Response does not contain a command key")
+            raise ProtocolError("Response does not contain a command key")
 
         if result["command"] != command:
-            raise ValueError("Unexpected response command")
+            raise ProtocolError("Unexpected response command")
 
     except serial.SerialException as exc:
         raise SerialCommunicationError("Serial communication failed") from exc
