@@ -4,7 +4,7 @@ import pytest
 import serial
 
 from tab5.client import send_command
-from tab5.exceptions import SerialCommunicationError
+from tab5.exceptions import ProtocolError, ResponseTimeoutError, SerialCommunicationError
 
 
 def test_ping_command(mock_client_serial):
@@ -115,11 +115,11 @@ def test_invalid_json_response(mock_client_serial):
 def test_no_response_timeout(mock_client_serial):
     mock_serial, fake_device = mock_client_serial
 
-    fake_device.readline.return_value = (
-        b''
-    )
+    fake_device.readline.return_value = b''
 
-    with pytest.raises(TimeoutError, match="No response from device"):
+    with pytest.raises(
+        ResponseTimeoutError, match="^No response from device$"
+        ):
         send_command("PING")
 
     fake_device.write.assert_called_once_with(b"PING\n")
@@ -164,7 +164,7 @@ def test_mismatched_response_command(mock_client_serial):
 
     fake_device.readline.return_value = response_data
 
-    with pytest.raises(ValueError, match="Unexpected response command"):
+    with pytest.raises(ProtocolError, match="^Unexpected response command$"):
         send_command("GET_SENSOR")
 
     fake_device.write.assert_called_once_with(b"GET_SENSOR\n")
@@ -181,7 +181,7 @@ def test_missing_response_command(mock_client_serial):
 
     fake_device.readline.return_value = response_data
 
-    with pytest.raises(ValueError, match="Response does not contain a command key"):
+    with pytest.raises(ProtocolError, match="^Response does not contain a command key$"):
         send_command("GET_SENSOR")
 
     fake_device.write.assert_called_once_with(b"GET_SENSOR\n")
@@ -208,7 +208,7 @@ def test_invalid_response_structure(mock_client_serial, response_data):
 
     fake_device.readline.return_value = response_data
 
-    with pytest.raises(ValueError, match="Response must be a JSON object"):
+    with pytest.raises(ProtocolError, match="^Response must be a JSON object$"):
         send_command("PING")
 
     fake_device.write.assert_called_once_with(b"PING\n")
@@ -273,11 +273,3 @@ def test_serial_read_failure(mock_client_serial):
     fake_device.readline.assert_called_once()
 
     mock_serial.assert_called_once_with("COM3", 115200, timeout=2)
-
-
-def test_serial_communication_error_inheritance():
-    assert issubclass(SerialCommunicationError, ConnectionError)
-
-    error = SerialCommunicationError("Serial communication error")
-    assert isinstance(error, ConnectionError)
-    assert str(error) == "Serial communication error"

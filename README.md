@@ -50,7 +50,8 @@ TERQA is currently under active development.
 - Parametrised unit testing.
 - Serial communication exception handling.
 - Exception chaining for failure diagnostics.
-- Custom exception classes for serial communication failures.
+- Centralised framework exception hierarchy.
+- Custom exceptions for serial communication, response timeouts and protocol validation failures.
 - Backwards-compatible exception inheritance.
 
 ### Supported Hardware
@@ -91,12 +92,14 @@ terqa/
 ├── tab5/
 │   ├── __init__.py
 │   ├── client.py
+│   ├── exceptions.py
 │   ├── parser.py
 │   └── serial_reader.py
 ├── tests/
 │   └── unit/
 │       ├── conftest.py
 │       ├── test_client.py
+│       ├── test_exceptions.py
 │       ├── test_parser.py
 │       └── test_serial_reader.py
 ├── .gitignore
@@ -104,6 +107,27 @@ terqa/
 ├── requirements-dev.txt
 └── README.md
 ```
+
+## Exception Handling
+
+TERQA provides a centralised exception hierarchy to support consistent error classification, failure diagnostics and exception handling.
+
+### Exception Hierarchy
+
+| Exception | Parent Classes | Purpose |
+| --- | --- | --- |
+| `TERQAError` | `Exception` | Base class for framework-specific exceptions. |
+| `SerialCommunicationError` | `ConnectionError`, `TERQAError` | Serial connection, write and read failures. |
+| `ResponseTimeoutError` | `TimeoutError`, `TERQAError` | No response received from the device. |
+| `ProtocolError` | `ValueError`, `TERQAError` | Invalid response structure or command validation failures. |
+
+Multiple inheritance preserves compatibility with existing built-in exception handlers while allowing framework-specific exceptions to be handled collectively through `TERQAError`.
+
+Exception chaining preserves the original serial communication exception for diagnostic purposes.
+
+Malformed JSON responses continue to raise `json.JSONDecodeError`.
+
+Exception inheritance, message preservation and simulated communication failures are validated through hardware-independent unit tests.
 
 ## Technologies
 
@@ -337,6 +361,8 @@ Additional technical documentation will be introduced as the framework evolves.
 - [ ] Configuration management
 - [ ] Centralised logging and diagnostics
 - [x] Custom exception handling
+- [x] Centralised exception hierarchy
+- [x] Backwards-compatible exception inheritance
 - [ ] Reusable device interfaces
 
 ### Cross-Platform Compatibility
