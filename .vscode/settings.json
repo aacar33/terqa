@@ -1,0 +1,7 @@
+{
+    "ruff.configurationPreference": "filesystemFirst",
+    "ruff.importStrategy": "fromEnvironment",
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    }
+}

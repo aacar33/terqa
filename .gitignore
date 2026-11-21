@@ -21,7 +21,13 @@ dist/
 *.egg-info/
 
 # Editor settings
-.vscode/
+# Ignore personal VS Code settings by default
+.vscode/*
+
+# Track shared TERQA workspace configuration
+!.vscode/settings.json
+!.vscode/extensions.json
+
 .idea/
 
 # Environment configuration and secrets
