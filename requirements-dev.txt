@@ -1,3 +1,5 @@
 pytest==9.2.0
 pyserial==3.5
 ruff==0.17.5
+
+-e .
