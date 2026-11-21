@@ -47,6 +47,8 @@ TERQA is currently under active development.
 - Sensor data parsing.
 - Mock-based unit testing.
 - Automated framework unit test execution through GitHub Actions.
+- Automated Python linting and code formatting using Ruff.
+- Code quality enforcement through GitHub Actions and required pull request checks.
 - Parametrised unit testing.
 - Serial communication exception handling.
 - Exception chaining for failure diagnostics.
@@ -133,6 +135,7 @@ Exception inheritance, message preservation and simulated communication failures
 
 - Python
 - pytest
+- Ruff
 - PySerial
 - unittest.mock
 - JSON
@@ -239,12 +242,68 @@ Development dependencies are maintained in `requirements-dev.txt`.
 | --- | --- |
 | pytest | 9.2.0 |
 | pyserial | 3.5 |
+| ruff | 0.17.5 |
 
 Virtual environments are excluded from version control and must be created locally.
 
 Each operating system must use its own virtual environment.
 
 Dependency requirements should be maintained consistently across local development and continuous integration environments.
+
+## Code Quality
+
+TERQA uses Ruff for automated Python linting and code formatting.
+
+Ruff provides consistent coding standards across the repository and helps identify potential code quality issues during development.
+
+### Configuration
+
+Ruff is configured through `pyproject.toml`.
+
+The current configuration includes:
+
+- Python 3.14 compatibility.
+- Configured line length of 88 characters.
+- Four-space indentation.
+- Double quotes for string formatting.
+- Import sorting.
+- Selected linting rules covering syntax, unused imports, undefined names and common coding issues.
+
+The Ruff version is pinned in `requirements-dev.txt` to maintain consistency between local development and CI.
+
+### Local Code Quality Checks
+
+Check the repository for linting violations:
+
+```bash
+ruff check .
+```
+
+Verify that all Python files follow the configured formatting rules:
+
+```bash
+ruff format --check .
+```
+
+Automatically format Python files:
+
+```bash
+ruff format .
+```
+
+The linting and formatting checks report violations without modifying source files.
+
+The formatting command modifies files to apply the configured style.
+
+Developers should execute both validation commands before committing changes.
+
+### VS Code Integration
+
+Ruff can be integrated with Visual Studio Code using the official Ruff extension.
+
+The extension provides editor diagnostics and automatic code formatting.
+
+Local editor integration does not replace the required CI checks.
 
 ## Testing Strategy
 
@@ -304,6 +363,9 @@ The continuous integration workflow executes framework unit tests on pushes and 
 | Operating Systems | Windows, Linux and macOS |
 | Python Version | 3.14 |
 | Test Framework | pytest |
+| Code Quality Tool | Ruff 0.17.5 |
+| Code Quality Runner | Ubuntu |
+| Code Quality Checks | Linting and formatting |
 | Execution Strategy | Parallel matrix execution |
 | Hardware Required | No |
 
@@ -311,13 +373,29 @@ The continuous integration workflow executes framework unit tests on pushes and 
 
 The `main` branch is protected through GitHub repository rules.
 
-All changes must be submitted through pull requests and satisfy the required automated test checks before merging.
+All changes must be submitted through pull requests and satisfy the required automated validation checks before merging.
+
+Two GitHub Actions status checks are required:
+
+| Required Check | Purpose |
+| --- | --- |
+| `unit-tests` | Validates framework unit tests across Windows, Linux and macOS. |
+| `code-quality` | Validates Python linting and formatting using Ruff. |
 
 Framework unit tests are executed independently across Windows, Linux and macOS.
 
 The aggregate `unit-tests` status check requires successful completion across all three platforms.
 
-A failure on any platform must prevent the pull request from being merged.
+The `code-quality` job runs independently on Ubuntu and executes the following commands:
+
+```bash
+ruff check .
+ruff format --check .
+```
+
+A failure in either required status check prevents the pull request from satisfying the repository's merge requirements.
+
+The required checks are enforced through the GitHub repository ruleset.
 
 Product-specific tests are excluded from the required CI checks.
 
@@ -363,6 +441,12 @@ Additional technical documentation will be introduced as the framework evolves.
 - [x] Custom exception handling
 - [x] Centralised exception hierarchy
 - [x] Backwards-compatible exception inheritance
+- [x] Ruff linting configuration
+- [x] Automated Python code formatting
+- [x] Ruff integration with VS Code
+- [x] Code quality validation through GitHub Actions
+- [x] Required CI code quality status checks
+- [x] Negative testing of code quality merge protection
 - [ ] Reusable device interfaces
 
 ### Cross-Platform Compatibility
