@@ -1,4 +1,3 @@
-
 import time
 
 import serial
@@ -12,7 +11,7 @@ def read_device(
     port="COM3",
     baudrate=115200,
     serial_timeout=10,
-    ):
+):
     measurements = []
 
     start_time = time.monotonic()

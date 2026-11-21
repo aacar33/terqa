@@ -1,4 +1,3 @@
-
 def parse_sensor_message(message):
     parsed = {}
     readings = message.split("|")
