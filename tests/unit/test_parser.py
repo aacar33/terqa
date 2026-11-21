@@ -1,4 +1,3 @@
-
 import pytest
 
 from tab5.parser import parse_sensor_message

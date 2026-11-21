@@ -34,6 +34,7 @@ def test_read_five_measurements(capsys):
         # Assert the serial connection arguments
         mock_serial.assert_called_once_with("COM3", 115200, timeout=10)
 
+
 def test_read_changing_measurements(capsys):
     """
     Patch tab5.serial_reader.serial.Serial.
@@ -83,9 +84,7 @@ def test_invalid_sensor_message():
     with patch("tab5.serial_reader.serial.Serial") as mock_serial:
         fake_device = mock_serial.return_value.__enter__.return_value
 
-        invalid_message = (
-            b"CO2: INVALID ppm | Temp: 24.46 C | Humidity: 46.44 %\n"
-        )
+        invalid_message = b"CO2: INVALID ppm | Temp: 24.46 C | Humidity: 46.44 %\n"
 
         fake_device.readline.return_value = invalid_message
 
@@ -180,6 +179,7 @@ def test_read_measurements_without_printing(capsys):
         captured = capsys.readouterr()
         assert captured.out == ""
 
+
 def test_custom_serial_settings():
     with patch("tab5.serial_reader.serial.Serial") as mock_serial:
         fake_device = mock_serial.return_value.__enter__.return_value
@@ -189,10 +189,10 @@ def test_custom_serial_settings():
         )
 
         read_device(
-                    port="COM5",
-                    baudrate=9600,
-                    serial_timeout=2,
-                    verbose=False,
+            port="COM5",
+            baudrate=9600,
+            serial_timeout=2,
+            verbose=False,
         )
 
         assert fake_device.readline.call_count == 5

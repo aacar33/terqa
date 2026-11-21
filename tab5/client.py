@@ -2,7 +2,11 @@ import json
 
 import serial
 
-from tab5.exceptions import ProtocolError, ResponseTimeoutError, SerialCommunicationError
+from tab5.exceptions import (
+    ProtocolError,
+    ResponseTimeoutError,
+    SerialCommunicationError,
+)
 
 
 def send_command(command, port="COM3", baudrate=115200, timeout=2):
