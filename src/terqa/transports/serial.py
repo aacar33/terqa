@@ -31,3 +31,9 @@ class SerialTransport:
             raise RuntimeError("Serial connection is not open")
 
         return self._connection.write(data)
+
+    def readline(self):
+        if self._connection is None:
+            raise RuntimeError("Serial connection is not open")
+
+        return self._connection.readline()

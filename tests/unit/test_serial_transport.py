@@ -117,3 +117,24 @@ def test_write_without_connection():
 
     with pytest.raises(RuntimeError, match="Serial connection is not open"):
         transport.write(b"PING\n")
+
+
+def test_readline_returns_bytes():
+    with patch("terqa.transports.serial.serial.Serial") as mock_serial:
+        fake_device = mock_serial.return_value
+        fake_device.readline.return_value = b"HELLO\n"
+
+        transport = SerialTransport("COM9", 9600, 1)
+
+        with transport:
+            response = transport.readline()
+
+        assert response == b"HELLO\n"
+        fake_device.readline.assert_called_once_with()
+
+
+def test_readline_without_connection():
+    transport = SerialTransport("COM9", 9600, 1)
+
+    with pytest.raises(RuntimeError, match="Serial connection is not open"):
+        transport.readline()
