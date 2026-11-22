@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+import serial
 
 from terqa.transports.serial import SerialTransport
 
@@ -138,3 +139,57 @@ def test_readline_without_connection():
 
     with pytest.raises(RuntimeError, match="Serial connection is not open"):
         transport.readline()
+
+
+def test_serial_connection_open_failure():
+    with patch("terqa.transports.serial.serial.Serial") as mock_serial:
+        mock_serial.side_effect = serial.SerialException("Unable to open port")
+
+        transport = SerialTransport("COM9", 9600, 1)
+
+        with pytest.raises(serial.SerialException, match="Unable to open port"):
+            with transport:
+                pass
+
+        mock_serial.assert_called_once_with(port="COM9", baudrate=9600, timeout=1)
+
+        assert transport._connection is None
+
+
+def test_serial_write_failure():
+
+    with patch("terqa.transports.serial.serial.Serial") as mock_serial:
+        transport = SerialTransport("COM9", 9600, 1)
+
+        mock_serial.return_value.write.side_effect = serial.SerialException(
+            "Write failed"
+        )
+
+        with pytest.raises(serial.SerialException, match="Write failed"):
+            with transport:
+                transport.write(b"PING\n")
+
+        mock_serial.return_value.write.assert_called_once_with(b"PING\n")
+
+        mock_serial.return_value.close.assert_called_once_with()
+
+        assert transport._connection is None
+
+
+def test_serial_readline_failure():
+    with patch("terqa.transports.serial.serial.Serial") as mock_serial:
+        transport = SerialTransport("COM9", 9600, 1)
+
+        mock_serial.return_value.readline.side_effect = serial.SerialException(
+            "Read failed"
+        )
+
+        with pytest.raises(serial.SerialException, match="Read failed"):
+            with transport:
+                transport.readline()
+
+        mock_serial.return_value.readline.assert_called_once_with()
+
+        mock_serial.return_value.close.assert_called_once_with()
+
+        assert transport._connection is None
