@@ -193,3 +193,40 @@ def test_serial_readline_failure():
         mock_serial.return_value.close.assert_called_once_with()
 
         assert transport._connection is None
+
+
+def test_close_failure_resets_connection():
+    with patch("terqa.transports.serial.serial.Serial") as mock_serial:
+        transport = SerialTransport("COM9", 9600, 1)
+
+        mock_serial.return_value.close.side_effect = serial.SerialException(
+            "Close failed"
+        )
+
+        with pytest.raises(serial.SerialException, match="Close failed"):
+            with transport:
+                pass
+
+        mock_serial.return_value.close.assert_called_once_with()
+
+        assert transport._connection is None
+
+
+def test_enter_when_connection_already_open():
+    with patch("terqa.transports.serial.serial.Serial") as mock_serial:
+        transport = SerialTransport("COM9", 9600, 1)
+
+        with transport:
+            with pytest.raises(RuntimeError, match="Serial connection is already open"):
+                with transport:
+                    pass
+
+        mock_serial.return_value.close.assert_called_once_with()
+
+        mock_serial.assert_called_once_with(
+            port="COM9",
+            baudrate=9600,
+            timeout=1,
+        )
+
+        assert transport._connection is None

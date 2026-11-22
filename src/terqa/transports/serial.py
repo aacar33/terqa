@@ -9,6 +9,9 @@ class SerialTransport:
         self._connection = None
 
     def __enter__(self):
+        if self._connection is not None:
+            raise RuntimeError("Serial connection is already open")
+
         self._connection = serial.Serial(
             port=self._port, baudrate=self._baudrate, timeout=self._timeout
         )
@@ -16,8 +19,11 @@ class SerialTransport:
 
     def __exit__(self, exc_type, exc_value, traceback):
         if self._connection is not None:
-            self._connection.close()
-            self._connection = None
+            try:
+                self._connection.close()
+
+            finally:
+                self._connection = None
 
     def get_settings(self):
         return {
